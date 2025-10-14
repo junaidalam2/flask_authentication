@@ -1,0 +1,26 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environment ---
+venv/
+.env/
+.venv/
+env/
+
+# --- Flask / Backend ---
+backend/__pycache__/
+backend/venv/
+backend/instance/
+backend/*.db
+backend/*.sqlite3
+backend/*.sqlite
+backend/*.log
+
+
+.vscode/
+__pypackages__/
+
+# --- Misc ---
+backend/__pypackages__/
