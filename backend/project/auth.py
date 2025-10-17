@@ -3,12 +3,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user
 from .models import User
 from project import db
+import pycountry
+
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login')
+
+@auth.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
+
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -27,6 +31,13 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     return redirect(url_for('main.profile'))
+
+
+@auth.route('/signup')
+def signup():
+    from pycountry import countries
+    countries = sorted([country.name for country in pycountry.countries])
+    return render_template('signup.html', countries=countries)
 
 
 @auth.route('/signup', methods=['POST'])
@@ -49,30 +60,32 @@ def signup_post():
     user = User.query.filter_by(email=email).first()
 
     if user:
-        flash('Email address already exists')
+        flash('Email address already exists.')
         return redirect(url_for('auth.signup'))
 
     new_user = User(
-            email=email, 
-            first_name=first_name, 
-            last_name=last_name, 
-            title=title, 
-            company_name=company_name, 
-            country=country, 
-            street_address=street_address, 
-            street_address_line2=street_address_line2, 
-            city=city, 
-            state_province_region=state_province_region, 
-            postal_code=postal_code, 
-            phone=phone, 
-            phone_type=phone_type, 
-            password=generate_password_hash(password, method='sha256')
-            )
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        title=title,
+        company_name=company_name,
+        country=country,
+        street_address=street_address,
+        street_address_line2=street_address_line2,
+        city=city,
+        state_province_region=state_province_region,
+        postal_code=postal_code,
+        phone=phone,
+        phone_type=phone_type,
+        password=generate_password_hash(password, method='sha256')
+    )
 
     db.session.add(new_user)
     db.session.commit()
 
+    flash('Account created successfully. Please log in.')
     return redirect(url_for('auth.login'))
+
 
 @auth.route('/logout')
 @login_required

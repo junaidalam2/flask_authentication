@@ -1,39 +1,163 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Sign Up</h3>
+<div class="column is-6 is-offset-3">
+    <h3 class="title has-text-centered">Sign Up</h3>
     <div class="box">
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="notification is-danger">
-            {{ messages[0] }}. Go to <a href="{{ url_for('auth.login') }}">login page</a>.
+            {{ messages[0] }}
         </div>
         {% endif %}
         {% endwith %}
 
-        <form method="POST" action="/signup">
+        <form method="POST" action="{{ url_for('auth.signup_post') }}">
+            <!-- Email -->
             <div class="field">
+                <label class="label">Email</label>
                 <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
+                    <input class="input" type="email" name="email" placeholder="Email" required>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="field">
+                <label class="label">Password</label>
+                <div class="control">
+                    <input class="input" type="password" name="password" placeholder="Password" required>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">First Name</label>
+                        <div class="control">
+                            <input class="input" type="text" name="first_name" placeholder="First Name" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Last Name</label>
+                        <div class="control">
+                            <input class="input" type="text" name="last_name" placeholder="Last Name" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="field">
+                <label class="label">Title</label>
+                <div class="control">
+                    <input class="input" type="text" name="title" placeholder="Job Title" required>
+                </div>
+            </div>
+
+            <!-- Company -->
+            <div class="field">
+                <label class="label">Company Name</label>
+                <div class="control">
+                    <input class="input" type="text" name="company_name" placeholder="Company Name" required>
+                </div>
+            </div>
+
+            <!-- Country -->
+            <div class="field">
+                <label class="label">Country</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="country" required>
+                            <option value="">Select your country</option>
+                            {% for country in countries %}
+                            <option value="{{ country }}">{{ country }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="field">
+                <label class="label">Street Address</label>
+                <div class="control">
+                    <input class="input" type="text" name="street_address" placeholder="Street Address" required>
                 </div>
             </div>
 
             <div class="field">
+                <label class="label">Street Address Line 2</label>
                 <div class="control">
-                    <input class="input is-large" type="text" name="name" placeholder="Name" autofocus="">
+                    <input class="input" type="text" name="street_address_line2"
+                        placeholder="Apartment, suite, etc. (optional)">
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">City</label>
+                        <div class="control">
+                            <input class="input" type="text" name="city" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">State / Province / Region</label>
+                        <div class="control">
+                            <input class="input" type="text" name="state_province_region" required>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="field">
+                <label class="label">Postal Code</label>
                 <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Password">
+                    <input class="input" type="text" name="postal_code" placeholder="Postal Code" required>
                 </div>
             </div>
 
+            <!-- Phone -->
+            <div class="columns">
+                <div class="column is-two-thirds">
+                    <div class="field">
+                        <label class="label">Phone Number</label>
+                        <div class="control">
+                            <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Phone Type</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="phone_type" required>
+                                    <option value="">Select type</option>
+                                    <option value="mobile">Mobile</option>
+                                    <option value="work">Work</option>
+                                    <option value="home">Home</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
             <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
         </form>
+
+        <p class="has-text-centered mt-3">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}">Log in</a>
+        </p>
     </div>
 </div>
 {% endblock %}
