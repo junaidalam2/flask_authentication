@@ -86,10 +86,10 @@
                 <label class="label">Country<span>*</span></label>
                 <div class="control">
                     <div class="select is-fullwidth">
-                        <select name="country" required>
+                        <select name="country" id="country" required>
                             <option value="">Select your country</option>
                             {% for code, name in countries %}
-                            <option value="{{ code }}">{{ name }}</option>
+                            <option value="{{ name }}">{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -115,57 +115,56 @@
             <div class="columns">
                 <div class="column">
                     <div class="field">
-                        <label class="label">
-                            City<span>*</span>
-                            <div class="control">
-                                <input class="input" type="text" name="city" required>
-                            </div>
+                        <label class="label">City<span>*</span></label>
+                        <div class="control">
+                            <input class="input" type="text" name="city" required>
+                        </div>
                     </div>
                 </div>
+
                 <div class="column">
                     <div class="field">
-                        <label class="label">
-                            State / Province / Region<span>*</span>
-                        </label>
+                        <label class="label">State / Province / Region<span>*</span></label>
                         <div class="control">
-                            <input class="input" type="text" name="state_province_region" required>
+                            <input class="input" name="state_province_region" id="state_province_region"
+                                list="state_list" placeholder="Select or type your subdivision" required>
+                            <datalist id="state_list"></datalist>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Postal Code<span>*</span></label>
+                        <div class="control">
+                            <input class="input" type="text" name="postal_code" placeholder="Postal Code" required>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="field">
-                <label class="label">
-                    Postal Code<span>*</span>
-                    <div class="control">
-                        <input class="input" type="text" name="postal_code" placeholder="Postal Code" required>
-                    </div>
-            </div>
-
             <div class="columns">
                 <div class="column is-two-thirds">
                     <div class="field">
-                        <label class="label">
-                            Phone Number<span>*</span>
-                            <div class="control">
-                                <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
-                            </div>
+                        <label class="label">Phone Number<span>*</span></label>
+                        <div class="control">
+                            <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
+                        </div>
                     </div>
                 </div>
                 <div class="column">
                     <div class="field">
-                        <label class="label">
-                            Phone Type<span>*</span>
-                            <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="phone_type" required>
-                                        <option value="">Select type</option>
-                                        <option value="mobile">Mobile</option>
-                                        <option value="work">Work</option>
-                                        <option value="home">Home</option>
-                                    </select>
-                                </div>
+                        <label class="label">Phone Type<span>*</span></label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="phone_type" required>
+                                    <option value="">Select type</option>
+                                    <option value="mobile">Mobile</option>
+                                    <option value="work">Work</option>
+                                    <option value="home">Home</option>
+                                </select>
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,7 +186,8 @@
         const confirm = document.getElementById("confirm_password");
         const help = document.getElementById("password_help");
 
-        function validatePasswords() {
+        // Instant password match validation
+        const validatePasswords = () => {
             if (confirm.value && confirm.value !== password.value) {
                 confirm.classList.add("is-danger");
                 help.style.display = "block";
@@ -195,24 +195,28 @@
                 confirm.classList.remove("is-danger");
                 help.style.display = "none";
             }
-        }
-
+        };
         password.addEventListener("input", validatePasswords);
         confirm.addEventListener("input", validatePasswords);
 
-        const emailInput = document.getElementById("email");
-        const emailHelp = document.getElementById("email_help");
+        // Subdivision datalist population
+        const countrySelect = document.getElementById("country");
+        const stateList = document.getElementById("state_list");
 
-        emailInput.addEventListener("input", () => {
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (emailInput.value && !emailPattern.test(emailInput.value)) {
-                emailInput.classList.add("is-danger");
-                emailHelp.style.display = "block";
-            } else {
-                emailInput.classList.remove("is-danger");
-                emailHelp.style.display = "none";
-            }
+        const subdivisions = {{ subdivisions | tojson | safe
+    }};
+
+    countrySelect.addEventListener("change", () => {
+        const selectedCountry = countrySelect.value;
+        const states = subdivisions[selectedCountry] || [];
+
+        stateList.innerHTML = '';
+        states.forEach(s => {
+            const option = document.createElement("option");
+            option.value = s.name;
+            stateList.appendChild(option);
         });
+    });
     });
 </script>
 

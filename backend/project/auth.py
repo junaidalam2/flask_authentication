@@ -10,6 +10,17 @@ import pycountry
 auth = Blueprint('auth', __name__)
 
 
+def get_subdivisions():
+    subdivisions_dict = {}
+    for subdivision in pycountry.subdivisions:
+        country_name = pycountry.countries.get(alpha_2=subdivision.country_code).name
+        subdivisions_dict.setdefault(country_name, []).append({
+            "code": subdivision.code,
+            "name": subdivision.name
+        })
+    return subdivisions_dict
+
+
 @auth.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
@@ -33,17 +44,16 @@ def login_post():
 
 @auth.route('/signup')
 def signup():
-    # Create a list of all countries with ISO codes
     all_countries = [(country.alpha_2, country.name) for country in pycountry.countries]
-
-    # Reorder so USA, Canada, UK come first
-    priority = ['US', 'CA', 'GB']
+    priority = ['US', 'CA', 'GB']  # USA, Canada, UK first
     sorted_countries = sorted(
         all_countries,
         key=lambda x: (0 if x[0] in priority else 1, priority.index(x[0]) if x[0] in priority else x[1])
     )
 
-    return render_template('signup.html', countries=sorted_countries)
+    subdivisions = get_subdivisions()
+    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions)
+
 
 
 @auth.route('/signup', methods=['POST'])
