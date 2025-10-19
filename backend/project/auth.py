@@ -22,28 +22,34 @@ def login_post():
 
     user = User.query.filter_by(email=email).first()
 
-    # check if the user actually exists
-    # take the user-supplied password, hash it, and compare it to the hashed password in the database
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
 
-    # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     return redirect(url_for('main.profile'))
 
 
 @auth.route('/signup')
 def signup():
-    from pycountry import countries
-    countries = sorted([country.name for country in pycountry.countries])
-    return render_template('signup.html', countries=countries)
+    # Create a list of all countries with ISO codes
+    all_countries = [(country.alpha_2, country.name) for country in pycountry.countries]
+
+    # Reorder so USA, Canada, UK come first
+    priority = ['US', 'CA', 'GB']
+    sorted_countries = sorted(
+        all_countries,
+        key=lambda x: (0 if x[0] in priority else 1, priority.index(x[0]) if x[0] in priority else x[1])
+    )
+
+    return render_template('signup.html', countries=sorted_countries)
 
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     email = request.form.get('email')
     password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
     title = request.form.get('title')
@@ -59,8 +65,12 @@ def signup_post():
 
     user = User.query.filter_by(email=email).first()
 
+    if password != confirm_password:
+        flash("Passwords do not match.", "danger")
+        return redirect(url_for('auth.signup'))
+    
     if user:
-        flash('Email address already exists.')
+        flash('Email address already exists.', 'danger')
         return redirect(url_for('auth.signup'))
 
     new_user = User(
@@ -83,7 +93,7 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
-    flash('Account created successfully. Please log in.')
+    flash('Account created successfully. Please log in.', 'success')
     return redirect(url_for('auth.login'))
 
 

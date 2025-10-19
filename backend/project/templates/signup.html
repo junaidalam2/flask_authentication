@@ -5,36 +5,49 @@
     <h3 class="title has-text-centered">Sign Up</h3>
     <div class="box">
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="notification is-danger">
+        <div class="notification is-{{ category }}">
             {{ messages[0] }}
         </div>
         {% endif %}
         {% endwith %}
 
         <form method="POST" action="{{ url_for('auth.signup_post') }}">
-            <!-- Email -->
             <div class="field">
-                <label class="label">Email</label>
+                <label class="label">
+                    Email<span>*</span>
+                </label>
                 <div class="control">
                     <input class="input" type="email" name="email" placeholder="Email" required>
                 </div>
             </div>
 
-            <!-- Password -->
             <div class="field">
-                <label class="label">Password</label>
+                <label class="label">
+                    Password<span>*</span>
+                </label>
                 <div class="control">
-                    <input class="input" type="password" name="password" placeholder="Password" required>
+                    <input class="input" type="password" id="password" name="password" placeholder="Password" required>
                 </div>
             </div>
 
-            <!-- Name -->
+            <div class="field">
+                <label class="label">Confirm Password<span>*</span></label>
+                <input class="input" type="password" id="confirm_password" name="confirm_password"
+                    placeholder="Re-enter your password" minlength="6" required>
+                <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <p class="help is-danger" id="password_help" style="display:none;">Passwords do not match.</p>
+            </div>
+
             <div class="columns">
                 <div class="column">
                     <div class="field">
-                        <label class="label">First Name</label>
+                        <label class="label">
+                            First Name<span>*</span>
+                        </label>
                         <div class="control">
                             <input class="input" type="text" name="first_name" placeholder="First Name" required>
                         </div>
@@ -42,7 +55,9 @@
                 </div>
                 <div class="column">
                     <div class="field">
-                        <label class="label">Last Name</label>
+                        <label class="label">
+                            Last Name<span>*</span>
+                        </label>
                         <div class="control">
                             <input class="input" type="text" name="last_name" placeholder="Last Name" required>
                         </div>
@@ -50,43 +65,44 @@
                 </div>
             </div>
 
-            <!-- Title -->
             <div class="field">
-                <label class="label">Title</label>
+                <label class="label">
+                    Title<span>*</span>
+                </label>
                 <div class="control">
                     <input class="input" type="text" name="title" placeholder="Job Title" required>
                 </div>
             </div>
 
-            <!-- Company -->
             <div class="field">
-                <label class="label">Company Name</label>
+                <label class="label">
+                    Company Name<span>*</span>
+                </label>
                 <div class="control">
                     <input class="input" type="text" name="company_name" placeholder="Company Name" required>
                 </div>
             </div>
 
-            <!-- Country -->
             <div class="field">
-                <label class="label">Country</label>
+                <label class="label">Country<span>*</span></label>
                 <div class="control">
                     <div class="select is-fullwidth">
                         <select name="country" required>
                             <option value="">Select your country</option>
-                            {% for country in countries %}
-                            <option value="{{ country }}">{{ country }}</option>
+                            {% for code, name in countries %}
+                            <option value="{{ code }}">{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Address -->
             <div class="field">
-                <label class="label">Street Address</label>
-                <div class="control">
-                    <input class="input" type="text" name="street_address" placeholder="Street Address" required>
-                </div>
+                <label class="label">
+                    Street Address<span>*</span>
+                    <div class="control">
+                        <input class="input" type="text" name="street_address" placeholder="Street Address" required>
+                    </div>
             </div>
 
             <div class="field">
@@ -100,15 +116,18 @@
             <div class="columns">
                 <div class="column">
                     <div class="field">
-                        <label class="label">City</label>
-                        <div class="control">
-                            <input class="input" type="text" name="city" required>
-                        </div>
+                        <label class="label">
+                            City<span>*</span>
+                            <div class="control">
+                                <input class="input" type="text" name="city" required>
+                            </div>
                     </div>
                 </div>
                 <div class="column">
                     <div class="field">
-                        <label class="label">State / Province / Region</label>
+                        <label class="label">
+                            State / Province / Region<span>*</span>
+                        </label>
                         <div class="control">
                             <input class="input" type="text" name="state_province_region" required>
                         </div>
@@ -117,40 +136,41 @@
             </div>
 
             <div class="field">
-                <label class="label">Postal Code</label>
-                <div class="control">
-                    <input class="input" type="text" name="postal_code" placeholder="Postal Code" required>
-                </div>
+                <label class="label">
+                    Postal Code<span>*</span>
+                    <div class="control">
+                        <input class="input" type="text" name="postal_code" placeholder="Postal Code" required>
+                    </div>
             </div>
 
-            <!-- Phone -->
             <div class="columns">
                 <div class="column is-two-thirds">
                     <div class="field">
-                        <label class="label">Phone Number</label>
-                        <div class="control">
-                            <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
-                        </div>
+                        <label class="label">
+                            Phone Number<span>*</span>
+                            <div class="control">
+                                <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
+                            </div>
                     </div>
                 </div>
                 <div class="column">
                     <div class="field">
-                        <label class="label">Phone Type</label>
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select name="phone_type" required>
-                                    <option value="">Select type</option>
-                                    <option value="mobile">Mobile</option>
-                                    <option value="work">Work</option>
-                                    <option value="home">Home</option>
-                                </select>
+                        <label class="label">
+                            Phone Type<span>*</span>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="phone_type" required>
+                                        <option value="">Select type</option>
+                                        <option value="mobile">Mobile</option>
+                                        <option value="work">Work</option>
+                                        <option value="home">Home</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Submit -->
             <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
         </form>
 
@@ -160,4 +180,27 @@
         </p>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const password = document.getElementById("password");
+        const confirm = document.getElementById("confirm_password");
+        const help = document.getElementById("password_help");
+
+        function validatePasswords() {
+            if (confirm.value && confirm.value !== password.value) {
+                confirm.classList.add("is-danger");
+                help.style.display = "block";
+            } else {
+                confirm.classList.remove("is-danger");
+                help.style.display = "none";
+            }
+        }
+
+        password.addEventListener("input", validatePasswords);
+        confirm.addEventListener("input", validatePasswords);
+    });
+</script>
+
 {% endblock %}
