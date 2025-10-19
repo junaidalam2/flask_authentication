@@ -77,7 +77,7 @@ def signup_post():
         postal_code=postal_code,
         phone=phone,
         phone_type=phone_type,
-        password=generate_password_hash(password, method='sha256')
+        password=generate_password_hash(password, method='pbkdf2:sha256')
     )
 
     db.session.add(new_user)
