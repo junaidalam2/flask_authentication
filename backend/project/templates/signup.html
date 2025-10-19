@@ -15,12 +15,11 @@
 
         <form method="POST" action="{{ url_for('auth.signup_post') }}">
             <div class="field">
-                <label class="label">
-                    Email<span>*</span>
-                </label>
+                <label class="label">Email<span>*</span></label>
                 <div class="control">
-                    <input class="input" type="email" name="email" placeholder="Email" required>
+                    <input class="input" type="email" id="email" name="email" placeholder="Email" required>
                 </div>
+                <p class="help is-danger" id="email_help" style="display:none;">Invalid email format.</p>
             </div>
 
             <div class="field">
@@ -200,6 +199,20 @@
 
         password.addEventListener("input", validatePasswords);
         confirm.addEventListener("input", validatePasswords);
+
+        const emailInput = document.getElementById("email");
+        const emailHelp = document.getElementById("email_help");
+
+        emailInput.addEventListener("input", () => {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailInput.value && !emailPattern.test(emailInput.value)) {
+                emailInput.classList.add("is-danger");
+                emailHelp.style.display = "block";
+            } else {
+                emailInput.classList.remove("is-danger");
+                emailHelp.style.display = "none";
+            }
+        });
     });
 </script>
 

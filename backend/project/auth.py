@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+from email_validator import validate_email, EmailNotValidError
 from flask_login import login_user, login_required, logout_user
 from .models import User
 from project import db
@@ -63,8 +64,14 @@ def signup_post():
     phone = request.form.get('phone')
     phone_type = request.form.get('phone_type')
 
-    user = User.query.filter_by(email=email).first()
-
+    #form checks: valid email, passwords match, email already registered
+    try:
+        valid = validate_email(email)
+        email = valid.email
+    except EmailNotValidError as e:
+        flash(str(e), "danger")
+        return redirect(url_for('auth.signup'))
+    
     if password != confirm_password:
         flash("Passwords do not match.", "danger")
         return redirect(url_for('auth.signup'))
@@ -72,6 +79,8 @@ def signup_post():
     if user:
         flash('Email address already exists.', 'danger')
         return redirect(url_for('auth.signup'))
+
+    user = User.query.filter_by(email=email).first()
 
     new_user = User(
         email=email,
