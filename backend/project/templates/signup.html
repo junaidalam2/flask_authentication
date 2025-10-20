@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+{% endblock %}
+
+
 {% block content %}
 <div class="column is-6 is-offset-3">
     <h3 class="title has-text-centered">Sign Up</h3>
@@ -23,22 +29,25 @@
             </div>
 
             <div class="field">
-                <label class="label">
-                    Password<span>*</span>
-                </label>
-                <div class="control">
+                <label class="label">Password<span>*</span></label>
+                <div class="control has-icons-right">
                     <input class="input" type="password" id="password" name="password" placeholder="Password" required>
+                    <span class="icon is-small is-right" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label">Confirm Password<span>*</span></label>
-                <input class="input" type="password" id="confirm_password" name="confirm_password"
-                    placeholder="Re-enter your password" minlength="6" required>
-                <span class="icon is-small is-left">
-                    <i class="fas fa-lock"></i>
-                </span>
-                <p class="help is-danger" id="password_help" style="display:none;">Passwords do not match.</p>
+                <div class="control has-icons-right">
+                    <input class="input" type="password" id="confirm_password" name="confirm_password"
+                        placeholder="Re-enter your password" minlength="6" required>
+                    <span class="icon is-small is-right" id="toggleConfirmPassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <p class="help is-danger" id="password_help" style="display: none;">Passwords do not match.</p>
             </div>
 
             <div class="columns">
@@ -199,6 +208,24 @@
         password.addEventListener("input", validatePasswords);
         confirm.addEventListener("input", validatePasswords);
 
+        // Toggle password visibility
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirm = document.getElementById("toggleConfirmPassword");
+
+        togglePassword.addEventListener("click", () => {
+            const type = password.type === "password" ? "text" : "password";
+            password.type = type;
+            togglePassword.querySelector("i").classList.toggle("fa-eye");
+            togglePassword.querySelector("i").classList.toggle("fa-eye-slash");
+        });
+
+        toggleConfirm.addEventListener("click", () => {
+            const type = confirm.type === "password" ? "text" : "password";
+            confirm.type = type;
+            toggleConfirm.querySelector("i").classList.toggle("fa-eye");
+            toggleConfirm.querySelector("i").classList.toggle("fa-eye-slash");
+        });
+
         // Subdivision datalist population
         const countrySelect = document.getElementById("country");
         const stateList = document.getElementById("state_list");
@@ -218,6 +245,7 @@
         });
     });
     });
+
 </script>
 
 {% endblock %}

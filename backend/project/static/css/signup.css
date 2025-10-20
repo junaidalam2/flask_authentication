@@ -1,0 +1,16 @@
+.control.has-icons-right .icon.is-right {
+    pointer-events: all;
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    /* This ensures the icon is above the input field */
+    color: #4a4a4a;
+}
+
+.control.has-icons-right input.input {
+    padding-right: 2.5rem;
+    /* Add space for the icon */
+}
