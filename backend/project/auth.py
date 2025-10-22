@@ -5,6 +5,7 @@ from flask_login import login_user, login_required, logout_user
 from .models import User
 from project import db
 import pycountry
+from config import Config
 
 
 auth = Blueprint('auth', __name__)
@@ -52,7 +53,7 @@ def signup():
     )
 
     subdivisions = get_subdivisions()
-    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions)
+    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions, google_places_api_key=Config.GOOGLE_PLACES_API_KEY)
 
 
 

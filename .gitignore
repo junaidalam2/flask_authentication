@@ -4,10 +4,10 @@ __pycache__/
 *$py.class
 
 # --- Virtual Environment ---
-venv/
-.env/
-.venv/
-env/
+backend/venv/
+backend/.env/
+backend/.venv/
+backend/env/
 
 # --- Flask / Backend ---
 backend/__pycache__/
