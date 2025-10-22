@@ -5,19 +5,9 @@ from flask_login import login_user, login_required, logout_user
 from .models import User
 from project import db
 import pycountry
-import phonenumbers
-from phonenumbers.phonenumberutil import NumberParseException
 
 
 auth = Blueprint('auth', __name__)
-
-
-def is_valid_phone(number):
-    try:
-        parsed_number = phonenumbers.parse(number, None)  # Automatically detects country from prefix
-        return phonenumbers.is_valid_number(parsed_number)
-    except NumberParseException:
-        return False
 
 
 def get_subdivisions():

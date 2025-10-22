@@ -2,6 +2,8 @@
 
 
 {% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css" />
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
 {% endblock %}
 
@@ -133,7 +135,7 @@
 
                 <div class="column">
                     <div class="field">
-                        <label class="label">State / Province / Region<span>*</span></label>
+                        <label class="label">State / Province<span>*</span></label>
                         <div class="control">
                             <input class="input" name="state_province_region" id="state_province_region"
                                 list="state_list" placeholder="Select or type your subdivision" required>
@@ -155,10 +157,8 @@
             <div class="columns">
                 <div class="column is-two-thirds">
                     <div class="field">
-                        <label class="label">Phone Number<span>*</span></label>
-                        <div class="control">
-                            <input class="input" type="tel" name="phone" placeholder="+1 555 123 4567" required>
-                        </div>
+                        <label class="label">Phone Number</label>
+                        <input class="input" type="tel" name="phone" placeholder="Enter phone number" required>
                     </div>
                 </div>
                 <div class="column">
@@ -188,62 +188,53 @@
     </div>
 </div>
 
+<script src="https://kit.fontawesome.com/a2d9d5b77b.js" crossorigin="anonymous"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const password = document.getElementById("password");
-        const confirm = document.getElementById("confirm_password");
-        const help = document.getElementById("password_help");
+    // Password visibility toggles
+    const togglePassword = document.getElementById("togglePassword");
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm_password");
+    const help = document.getElementById("password_help");
 
-        // Instant password match validation
-        const validatePasswords = () => {
-            if (confirm.value && confirm.value !== password.value) {
-                confirm.classList.add("is-danger");
-                help.style.display = "block";
-            } else {
-                confirm.classList.remove("is-danger");
-                help.style.display = "none";
-            }
-        };
-        password.addEventListener("input", validatePasswords);
-        confirm.addEventListener("input", validatePasswords);
+    const toggleVisibility = (input, toggleIcon) => {
+        const type = input.type === "password" ? "text" : "password";
+        input.type = type;
+        toggleIcon.querySelector("i").classList.toggle("fa-eye");
+        toggleIcon.querySelector("i").classList.toggle("fa-eye-slash");
+    };
 
-        // Toggle password visibility
-        const togglePassword = document.getElementById("togglePassword");
-        const toggleConfirm = document.getElementById("toggleConfirmPassword");
+    togglePassword.addEventListener("click", () => toggleVisibility(password, togglePassword));
+    toggleConfirmPassword.addEventListener("click", () => toggleVisibility(confirm, toggleConfirmPassword));
 
-        togglePassword.addEventListener("click", () => {
-            const type = password.type === "password" ? "text" : "password";
-            password.type = type;
-            togglePassword.querySelector("i").classList.toggle("fa-eye");
-            togglePassword.querySelector("i").classList.toggle("fa-eye-slash");
-        });
+    // Password match validation
+    const validatePasswords = () => {
+        if (confirm.value && confirm.value !== password.value) {
+            confirm.classList.add("is-danger");
+            help.style.display = "block";
+        } else {
+            confirm.classList.remove("is-danger");
+            help.style.display = "none";
+        }
+    };
+    password.addEventListener("input", validatePasswords);
+    confirm.addEventListener("input", validatePasswords);
 
-        toggleConfirm.addEventListener("click", () => {
-            const type = confirm.type === "password" ? "text" : "password";
-            confirm.type = type;
-            toggleConfirm.querySelector("i").classList.toggle("fa-eye");
-            toggleConfirm.querySelector("i").classList.toggle("fa-eye-slash");
-        });
-
-        // Subdivision datalist population
-        const countrySelect = document.getElementById("country");
-        const stateList = document.getElementById("state_list");
-
-        const subdivisions = {{ subdivisions | tojson | safe
-    }};
+    // Subdivision datalist update
+    const countrySelect = document.getElementById("country");
+    const stateList = document.getElementById("state_list");
+    const subdivisions = {{ subdivisions | tojson | safe }};
 
     countrySelect.addEventListener("change", () => {
         const selectedCountry = countrySelect.value;
         const states = subdivisions[selectedCountry] || [];
-
         stateList.innerHTML = '';
         states.forEach(s => {
             const option = document.createElement("option");
             option.value = s.name;
             stateList.appendChild(option);
         });
-    });
     });
 
 </script>
