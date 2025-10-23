@@ -5,21 +5,12 @@ from flask_login import login_user, login_required, logout_user
 from .models import User
 from project import db
 import pycountry
+from project.utils.countries import get_subdivisions
+from project.utils.countries import get_country_calling_codes
 from config import Config
 
 
 auth = Blueprint('auth', __name__)
-
-
-def get_subdivisions():
-    subdivisions_dict = {}
-    for subdivision in pycountry.subdivisions:
-        country_name = pycountry.countries.get(alpha_2=subdivision.country_code).name
-        subdivisions_dict.setdefault(country_name, []).append({
-            "code": subdivision.code,
-            "name": subdivision.name
-        })
-    return subdivisions_dict
 
 
 @auth.route('/login', methods=['GET'])
@@ -51,9 +42,9 @@ def signup():
         all_countries,
         key=lambda x: (0 if x[0] in priority else 1, priority.index(x[0]) if x[0] in priority else x[1])
     )
-
+    countries_phone = get_country_calling_codes()
     subdivisions = get_subdivisions()
-    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions, google_places_api_key=Config.GOOGLE_PLACES_API_KEY)
+    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions, countries_phone=countries_phone, google_places_api_key=Config.GOOGLE_PLACES_API_KEY)
 
 
 
@@ -93,9 +84,9 @@ def signup_post():
         flash('Email address already exists.', 'danger')
         return redirect(url_for('auth.signup'))
 
-    if not is_valid_phone(phone):
-        flash("Invalid phone number format.", "danger")
-        return redirect(url_for('auth.signup'))
+    # if not is_valid_phone(phone):
+    #     flash("Invalid phone number format.", "danger")
+    #     return redirect(url_for('auth.signup'))
 
     new_user = User(
         email=email,
