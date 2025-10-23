@@ -44,8 +44,13 @@ def signup():
     )
     countries_phone = get_country_calling_codes()
     subdivisions = get_subdivisions()
-    return render_template('signup.html', countries=sorted_countries, subdivisions=subdivisions, countries_phone=countries_phone, google_places_api_key=Config.GOOGLE_PLACES_API_KEY)
-
+    return render_template(
+        'signup.html', 
+        countries=sorted_countries, 
+        subdivisions=subdivisions, 
+        countries_phone=countries_phone, 
+        google_places_api_key=Config.GOOGLE_PLACES_API_KEY
+    )
 
 
 @auth.route('/signup', methods=['POST'])
@@ -83,10 +88,6 @@ def signup_post():
     if user:
         flash('Email address already exists.', 'danger')
         return redirect(url_for('auth.signup'))
-
-    # if not is_valid_phone(phone):
-    #     flash("Invalid phone number format.", "danger")
-    #     return redirect(url_for('auth.signup'))
 
     new_user = User(
         email=email,
