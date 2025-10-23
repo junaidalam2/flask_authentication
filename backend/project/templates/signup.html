@@ -110,6 +110,20 @@
                 </div>
             </div>
 
+            <div class="field">
+                <label class="label">Country<span>*</span></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="country" id="country" required>
+                            <option value="">Select your country</option>
+                            {% for code, name in countries %}
+                            <option value="{{ name }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="columns">
                 <div class="column">
                     <div class="field">
@@ -142,24 +156,10 @@
                 </div>
             </div>
 
-            <div class="field">
-                <label class="label">Country<span>*</span></label>
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <select name="country" id="country" required>
-                            <option value="">Select your country</option>
-                            {% for code, name in countries %}
-                            <option value="{{ name }}">{{ name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <div class="columns">
                 <div class="column is-two-thirds">
                     <div class="field">
-                        <label class="label">Phone Number</label>
+                        <label class="label">Phone Number<span>*</span></label>
                         <input class="input" type="tel" name="phone" placeholder="Enter phone number" required>
                     </div>
                 </div>
