@@ -117,7 +117,7 @@
                         <select name="country" id="country" required>
                             <option value="">Select your country</option>
                             {% for code, name in countries %}
-                            <option value="{{ name }}">{{ name }}</option>
+                            <option value="{{ code }}">{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -242,22 +242,48 @@
     password.addEventListener("input", validatePasswords);
     confirm.addEventListener("input", validatePasswords);
 
+
     // Subdivision datalist update
     const countrySelect = document.getElementById("country");
     const stateList = document.getElementById("state_list");
+    const countryCodeSelect = document.getElementById("country_code");
+
+    // subdivisions is keyed by ISO alpha-2, passed from Flask
     const subdivisions = {{ subdivisions | tojson | safe }};
 
+    const countryPhoneData = {};
+    {% for c in countries_phone %}
+    countryPhoneData["{{ c.alpha_2 }}"] = "{{ c.dial_code }}";
+    {% endfor %}
+
     countrySelect.addEventListener("change", () => {
-        const selectedCountry = countrySelect.value;
-        const states = subdivisions[selectedCountry] || [];
+        const selectedCountryCode = countrySelect.value;
+
+        // --- Update subdivisions ---
+        const states = subdivisions[selectedCountryCode] || [];
         stateList.innerHTML = '';
         states.forEach(s => {
             const option = document.createElement("option");
-            option.value = s.name;
+            option.value = s.name; // user sees subdivision name
             stateList.appendChild(option);
         });
+
+        // --- Update country code dropdown ---
+        const dialCode = countryPhoneData[selectedCountryCode];
+        if (dialCode) {
+            for (let i = 0; i < countryCodeSelect.options.length; i++) {
+                if (countryCodeSelect.options[i].value === dialCode) {
+                    countryCodeSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
     });
 
+    // Optional: trigger change on page load if a country is pre-selected
+    if (countrySelect.value) {
+        countrySelect.dispatchEvent(new Event('change'));
+    }
     // Email format validation
     const emailInput = document.getElementById("email");
     const emailHelp = document.getElementById("email_help");

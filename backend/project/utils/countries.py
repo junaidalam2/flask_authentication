@@ -27,8 +27,8 @@ def get_country_calling_codes():
 def get_subdivisions():
     subdivisions_dict = {}
     for subdivision in pycountry.subdivisions:
-        country_name = pycountry.countries.get(alpha_2=subdivision.country_code).name
-        subdivisions_dict.setdefault(country_name, []).append({
+        country_code = subdivision.country_code
+        subdivisions_dict.setdefault(country_code, []).append({
             "code": subdivision.code,
             "name": subdivision.name
         })
