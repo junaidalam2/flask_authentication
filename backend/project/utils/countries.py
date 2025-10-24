@@ -6,16 +6,21 @@ def get_country_calling_codes():
     for country in pycountry.countries:
         try:
             dial_code = phonenumbers.country_code_for_region(country.alpha_2)
-            countries.append({
-                "name": country.name,
-                "alpha_2": country.alpha_2,
-                "dial_code": f"+{dial_code}"
-            })
+            if dial_code:  # skip invalid or missing ones
+                countries.append({
+                    "name": country.name,
+                    "alpha_2": country.alpha_2,
+                    "dial_code": f"+{dial_code}"
+                })
         except Exception:
-            # skip regions without phone codes (e.g. Antarctica)
-            continue
-    # Optional: sort alphabetically
-    countries.sort(key=lambda x: x["name"])
+            continue  # skip unrecognized territories
+
+    # Priority countries first
+    priority = ['US', 'CA', 'GB']
+    countries.sort(key=lambda c: (
+        0 if c["alpha_2"] in priority else 1,
+        priority.index(c["alpha_2"]) if c["alpha_2"] in priority else c["name"]
+    ))
     return countries
 
 
