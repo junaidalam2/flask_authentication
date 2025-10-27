@@ -8,9 +8,27 @@ import pycountry
 from project.utils.countries import get_subdivisions
 from project.utils.countries import get_country_calling_codes
 from config import Config
+from flask import current_app
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer
+from project import mail
 
 
 auth = Blueprint('auth', __name__)
+
+
+def generate_reset_token(email):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt='password-reset-salt')
+
+
+def verify_reset_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=expiration)
+    except Exception:
+        return None
+    return email
 
 
 @auth.route('/login', methods=['GET'])
@@ -118,3 +136,57 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
+
+
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            token = generate_reset_token(email)
+            reset_link = url_for('auth.reset_password', token=token, _external=True)
+
+            msg = Message('Password Reset Request', recipients=[email])
+            msg.body = f'''
+            To reset your password, click the following link:
+            {reset_link}
+
+            If you did not request this, please ignore this email.
+            '''
+            mail.send(msg)
+            flash('A password reset link has been sent to your email.', 'info')
+        else:
+            flash('No account found with that email.', 'danger')
+
+        return redirect(url_for('auth.login'))
+    
+    return render_template('forgot_password.html')
+
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = verify_reset_token(token)
+    if not email:
+        flash('Invalid or expired reset link.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm = request.form.get('confirm_password')
+
+        if password != confirm:
+            flash('Passwords do not match.', 'danger')
+            return redirect(request.url)
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(password, method='pbkdf2:sha256')
+            db.session.commit()
+            flash('Your password has been reset. Please log in.', 'success')
+            return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html')
