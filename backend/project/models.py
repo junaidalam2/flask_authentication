@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     company_name = db.Column(db.String(300), nullable=False)
 
     # Required address fields (international-friendly)
-    country = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(100), nullable=True)
     street_address = db.Column(db.String(200), nullable=False)
     street_address_line2 = db.Column(db.String(200))  # optional
     city = db.Column(db.String(100), nullable=False)
@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     postal_code = db.Column(db.String(20), nullable=False)
 
     # Required contact info
+    country_code = db.Column(db.String(10), nullable=True)
     phone = db.Column(db.String(20), nullable=False)
     phone_type = db.Column(db.String(20), nullable=False)  # e.g., "mobile", "work", "home"
 
