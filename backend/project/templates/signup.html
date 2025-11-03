@@ -176,7 +176,11 @@
                     <div class="field">
                         <label class="label">Phone Number<span>*</span></label>
                         <div class="control">
-                            <input class="input" type="tel" name="phone" placeholder="Enter phone number" required>
+                            <input class="input" type="tel" id="phone" name="phone" placeholder="Enter phone number"
+                                pattern="^\d[\d\s\-\(\)]{6,19}\d$"
+                                title="Enter a valid phone number (7–15 digits, no spaces or symbols)" required>
+                            <p class="help is-danger" id="phone_help" style="display:none;">Phone number must be 7–15
+                                digits only.</p>
                         </div>
                     </div>
                 </div>
@@ -342,6 +346,22 @@
 
     // Initialize when the page loads
     google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+
+    // Phone validation (digits only, length 7–15)
+    const phoneInput = document.getElementById("phone");
+    const phoneHelp = document.getElementById("phone_help");
+
+    phoneInput.addEventListener("input", () => {
+        const phonePattern = /^\d[\d\s\-\(\)]{6,19}\d$/;
+        if (phoneInput.value.trim() && !phonePattern.test(phoneInput.value)) {
+            phoneInput.classList.add("is-danger");
+            phoneHelp.style.display = "block";
+        } else {
+            phoneInput.classList.remove("is-danger");
+            phoneHelp.style.display = "none";
+        }
+    });
 
 </script>
 
