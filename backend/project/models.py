@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     postal_code = db.Column(db.String(20), nullable=False)
 
     # Required contact info
-    country_code = db.Column(db.String(10), nullable=True)
+    country_code = db.Column(db.String(10), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     phone_type = db.Column(db.String(20), nullable=False)  # e.g., "mobile", "work", "home"
 
