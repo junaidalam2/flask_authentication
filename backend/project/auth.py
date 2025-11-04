@@ -45,8 +45,8 @@ def login_post():
     user = User.query.filter_by(email=email).first()
 
     if not user or not check_password_hash(user.password, password):
-        flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
+        flash('Please check your login details and try again.', 'danger')
+        return render_template('login.html', email=email)
 
     login_user(user, remember=remember)
     return redirect(url_for('main.profile'))
@@ -67,7 +67,8 @@ def signup():
         countries=sorted_countries, 
         subdivisions=subdivisions, 
         countries_phone=countries_phone, 
-        google_places_api_key=Config.GOOGLE_PLACES_API_KEY
+        google_places_api_key=Config.GOOGLE_PLACES_API_KEY,
+        form={} 
     )
 
 
@@ -86,6 +87,7 @@ def signup_post():
     city = request.form.get('city')
     state_province_region = request.form.get('state_province_region')
     postal_code = request.form.get('postal_code')
+    country_code = request.form.get('country_code')
     phone = request.form.get('phone')
     phone_type = request.form.get('phone_type')
 
@@ -95,17 +97,38 @@ def signup_post():
         email = valid.email
     except EmailNotValidError as e:
         flash(str(e), "danger")
-        return redirect(url_for('auth.signup'))
+        return render_template(
+            'signup.html',
+            countries=[(c.alpha_2, c.name) for c in pycountry.countries],
+            subdivisions=get_subdivisions(),
+            countries_phone=get_country_calling_codes(),
+            google_places_api_key=Config.GOOGLE_PLACES_API_KEY,
+            form=request.form
+        )
     
     if password != confirm_password:
         flash("Passwords do not match.", "danger")
-        return redirect(url_for('auth.signup'))
+        return render_template(
+            'signup.html',
+            countries=[(c.alpha_2, c.name) for c in pycountry.countries],
+            subdivisions=get_subdivisions(),
+            countries_phone=get_country_calling_codes(),
+            google_places_api_key=Config.GOOGLE_PLACES_API_KEY,
+            form=request.form
+        )
     
     user = User.query.filter_by(email=email).first()
 
     if user:
         flash('Email address already exists.', 'danger')
-        return redirect(url_for('auth.signup'))
+        return render_template(
+            'signup.html',
+            countries=[(c.alpha_2, c.name) for c in pycountry.countries],
+            subdivisions=get_subdivisions(),
+            countries_phone=get_country_calling_codes(),
+            google_places_api_key=Config.GOOGLE_PLACES_API_KEY,
+            form=request.form
+        )
 
     new_user = User(
         email=email,
@@ -121,6 +144,7 @@ def signup_post():
         postal_code=postal_code,
         phone=phone,
         phone_type=phone_type,
+        country_code=country_code,
         password=generate_password_hash(password, method='pbkdf2:sha256')
     )
 
@@ -136,8 +160,6 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
-
-
 
 
 @auth.route('/forgot_password', methods=['GET', 'POST'])

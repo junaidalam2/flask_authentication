@@ -25,7 +25,8 @@
             <div class="field">
                 <label class="label">Email<span>*</span></label>
                 <div class="control">
-                    <input class="input" type="email" id="email" name="email" placeholder="Email" required>
+                    <input class="input" type="email" id="email" name="email" placeholder="Email"
+                        value="{{ form.email or '' }}" required>
                 </div>
                 <p class="help is-danger" id="email_help" style="display:none;">Invalid email format.</p>
             </div>
@@ -59,7 +60,8 @@
                             First Name<span>*</span>
                         </label>
                         <div class="control">
-                            <input class="input" type="text" name="first_name" placeholder="First Name" required>
+                            <input class="input" type="text" name="first_name" placeholder="First Name"
+                                value="{{ form.first_name or '' }}" required>
                         </div>
                     </div>
                 </div>
@@ -69,7 +71,8 @@
                             Last Name<span>*</span>
                         </label>
                         <div class="control">
-                            <input class="input" type="text" name="last_name" placeholder="Last Name" required>
+                            <input class="input" type="text" name="last_name" placeholder="Last Name"
+                                value="{{ form.last_name or '' }}" required>
                         </div>
                     </div>
                 </div>
@@ -80,7 +83,8 @@
                     Title<span>*</span>
                 </label>
                 <div class="control">
-                    <input class="input" type="text" name="title" placeholder="Job Title" required>
+                    <input class="input" type="text" name="title" placeholder="Job Title" value="{{ form.title or '' }}"
+                        required>
                 </div>
             </div>
 
@@ -89,7 +93,8 @@
                     Company Name<span>*</span>
                 </label>
                 <div class="control">
-                    <input class="input" type="text" name="company_name" placeholder="Company Name" required>
+                    <input class="input" type="text" name="company_name" placeholder="Company Name"
+                        value="{{ form.company_name or '' }}" required>
                 </div>
             </div>
 
@@ -98,7 +103,7 @@
                     Street Address<span>*</span>
                     <div class="control">
                         <input class="input" type="text" name="street_address" id="street_address"
-                            placeholder="Street Address" required>
+                            placeholder="Street Address" value="{{ form.street_address or '' }}" required>
                     </div>
             </div>
 
@@ -106,7 +111,7 @@
                 <label class="label">Street Address Line 2</label>
                 <div class="control">
                     <input class="input" type="text" name="street_address_line2"
-                        placeholder="Apartment, suite, etc. (optional)">
+                        value="{{ form.street_address_line2 or '' }}" placeholder="Apartment, suite, etc. (optional)">
                 </div>
             </div>
 
@@ -117,7 +122,8 @@
                         <select name="country" id="country" required>
                             <option value="">Select your country</option>
                             {% for code, name in countries %}
-                            <option value="{{ code }}">{{ name }}</option>
+                            <option value="{{ code }}" {% if form.country==code %}selected{% endif %}>{{ name }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -129,7 +135,8 @@
                     <div class="field">
                         <label for="city" class="label">City<span>*</span></label>
                         <div class="control">
-                            <input class="input" type="text" name="city" id="city" required>
+                            <input class="input" type="text" name="city" id="city" value="{{ form.city or '' }}"
+                                required>
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,8 @@
                         <label class="label">State / Province<span>*</span></label>
                         <div class="control">
                             <input class="input" name="state_province_region" id="state_province_region"
-                                list="state_list" placeholder="Select or type your subdivision" required>
+                                list="state_list" placeholder="Select or type your subdivision"
+                                value="{{ form.state_province_region or '' }}" required>
                             <datalist id="state_list"></datalist>
                         </div>
                     </div>
@@ -150,7 +158,7 @@
                         <label class="label">Postal Code<span>*</span></label>
                         <div class="control">
                             <input class="input" type="text" name="postal_code" id="postal_code"
-                                placeholder="Postal Code" required>
+                                placeholder="Postal Code" value="{{ form.postal_code or '' }}" required>
                         </div>
                     </div>
                 </div>
@@ -178,7 +186,8 @@
                         <div class="control">
                             <input class="input" type="tel" id="phone" name="phone" placeholder="Enter phone number"
                                 pattern="^\d[\d\s\-\(\)]{6,19}\d$"
-                                title="Enter a valid phone number (7–15 digits, no spaces or symbols)" required>
+                                title="Enter a valid phone number (7–15 digits, no spaces or symbols)"
+                                value="{{ form.phone or '' }}" required>
                             <p class="help is-danger" id="phone_help" style="display:none;">Phone number must be 7–15
                                 digits only.</p>
                         </div>
@@ -192,9 +201,12 @@
                             <div class="select is-fullwidth">
                                 <select id="phone_type" name="phone_type" required>
                                     <option value="">Select type</option>
-                                    <option value="mobile">Mobile</option>
-                                    <option value="work">Work</option>
-                                    <option value="home">Home</option>
+                                    <option value="mobile" {% if form.phone_type=='mobile' %}selected{% endif %}>Mobile
+                                    </option>
+                                    <option value="work" {% if form.phone_type=='work' %}selected{% endif %}>Work
+                                    </option>
+                                    <option value="home" {% if form.phone_type=='home' %}selected{% endif %}>Home
+                                    </option>
                                 </select>
                             </div>
                         </div>
