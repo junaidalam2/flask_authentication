@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.min.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="column is-6 is-offset-3">
+    <h3 class="title has-text-centered">Edit Profile</h3>
+    <div class="box">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="notification is-{{ category }}">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.edit_profile_post') }}">
+            <!-- Email -->
+            <div class="field">
+                <label class="label">Email<span>*</span></label>
+                <div class="control">
+                    <input class="input" type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <p class="help is-danger" id="email_help" style="display:none;">Invalid email format.</p>
+            </div>
+
+            <!-- Optional password change -->
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">New Password</label>
+                        <div class="control has-icons-right">
+                            <input class="input" type="password" id="password" name="password" placeholder="New Password">
+                            <span class="icon is-small is-right" id="togglePassword"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Confirm Password</label>
+                        <div class="control has-icons-right">
+                            <input class="input" type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
+                            <span class="icon is-small is-right" id="toggleConfirmPassword"><i class="fas fa-eye"></i></span>
+                        </div>
+                        <p class="help is-danger" id="password_help" style="display:none;">Passwords do not match.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label">First Name<span>*</span></label>
+                        <div class="control">
+                            <input class="input" type="text" name="first_name" value="{{ user.first_name }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label">Last Name<span>*</span></label>
+                        <div class="control">
+                            <input class="input" type="text" name="last_name" value="{{ user.last_name }}" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job title and company -->
+            <div class="field">
+                <label class="label">Title<span>*</span></label>
+                <div class="control">
+                    <input class="input" type="text" name="title" value="{{ user.title }}" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Company Name<span>*</span></label>
+                <div class="control">
+                    <input class="input" type="text" name="company_name" value="{{ user.company_name }}" required>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="field">
+                <label class="label">Street Address<span>*</span></label>
+                <div class="control">
+                    <input class="input" type="text" name="street_address" id="street_address" value="{{ user.street_address }}" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Street Address Line 2</label>
+                <div class="control">
+                    <input class="input" type="text" name="street_address_line2" value="{{ user.street_address_line2 }}">
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column">
+                    <label class="label">Country<span>*</span></label>
+                    <div class="select is-fullwidth">
+                        <select id="country" name="country" required>
+                            <option value="">Select Country</option>
+                            {% for code, name in countries %}
+                            <option value="{{ code }}" {% if user.country == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <label class="label">City<span>*</span></label>
+                    <input class="input" type="text" name="city" id="city" value="{{ user.city }}" required>
+                </div>
+
+                <div class="column">
+                    <label class="label">State / Province<span>*</span></label>
+                    <input class="input" type="text" name="state_province_region" id="state_province_region" list="state_list" value="{{ user.state_province_region }}" required>
+                    <datalist id="state_list"></datalist>
+                </div>
+
+                <div class="column">
+                    <label class="label">Postal Code<span>*</span></label>
+                    <input class="input" type="text" name="postal_code" id="postal_code" value="{{ user.postal_code }}" required>
+                </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="columns">
+                <div class="column is-one-quarter">
+                    <label class="label">Country Code<span>*</span></label>
+                    <div class="select is-fullwidth">
+                        <select id="country_code" name="country_code" required>
+                            {% for c in countries_phone %}
+                            <option value="{{ c.dial_code }}" {% if user.country_code == c.dial_code %}selected{% endif %}>{{ c.name }} ({{ c.dial_code }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="column is-half">
+                    <label class="label">Phone Number<span>*</span></label>
+                    <input class="input" type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
+                    <p class="help is-danger" id="phone_help" style="display:none;">Invalid phone number.</p>
+                </div>
+
+                <div class="column is-one-quarter">
+                    <label class="label">Phone Type<span>*</span></label>
+                    <div class="select is-fullwidth">
+                        <select id="phone_type" name="phone_type" required>
+                            <option value="mobile" {% if user.phone_type == 'mobile' %}selected{% endif %}>Mobile</option>
+                            <option value="work" {% if user.phone_type == 'work' %}selected{% endif %}>Work</option>
+                            <option value="home" {% if user.phone_type == 'home' %}selected{% endif %}>Home</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="button is-info is-fullwidth">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/a2d9d5b77b.js" crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_places_api_key }}&libraries=places"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // ------------------- Password toggles and match -------------------
+    const toggleVisibility = (input, toggleIcon) => {
+        const type = input.type === "password" ? "text" : "password";
+        input.type = type;
+        toggleIcon.querySelector("i").classList.toggle("fa-eye");
+        toggleIcon.querySelector("i").classList.toggle("fa-eye-slash");
+    };
+
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm_password");
+    if (password && confirm) {
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+        const help = document.getElementById("password_help");
+
+        togglePassword.addEventListener("click", () => toggleVisibility(password, togglePassword));
+        toggleConfirmPassword.addEventListener("click", () => toggleVisibility(confirm, toggleConfirmPassword));
+
+        const validatePasswords = () => {
+            if (confirm.value && confirm.value !== password.value) {
+                confirm.classList.add("is-danger");
+                help.style.display = "block";
+            } else {
+                confirm.classList.remove("is-danger");
+                help.style.display = "none";
+            }
+        };
+
+        password.addEventListener("input", validatePasswords);
+        confirm.addEventListener("input", validatePasswords);
+    }
+
+    // ------------------- Email validation -------------------
+    const emailInput = document.getElementById("email");
+    if (emailInput) {
+        const emailHelp = document.getElementById("email_help");
+        emailInput.addEventListener("input", () => {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailInput.value.trim() && !emailPattern.test(emailInput.value)) {
+                emailInput.classList.add("is-danger");
+                emailHelp.style.display = "block";
+            } else {
+                emailInput.classList.remove("is-danger");
+                emailHelp.style.display = "none";
+            }
+        });
+    }
+
+    // ------------------- Phone validation -------------------
+    const phoneInput = document.getElementById("phone");
+    if (phoneInput) {
+        const phoneHelp = document.getElementById("phone_help");
+        phoneInput.addEventListener("input", () => {
+            const phonePattern = /^\d[\d\s\-\(\)]{6,19}\d$/;
+            if (phoneInput.value.trim() && !phonePattern.test(phoneInput.value)) {
+                phoneInput.classList.add("is-danger");
+                phoneHelp.style.display = "block";
+            } else {
+                phoneInput.classList.remove("is-danger");
+                phoneHelp.style.display = "none";
+            }
+        });
+    }
+
+    // ------------------- Country / state updates -------------------
+    const countrySelect = document.getElementById("country");
+    const stateList = document.getElementById("state_list");
+    const countryCodeSelect = document.getElementById("country_code");
+    const subdivisions = {{ subdivisions | tojson | safe }};
+    const countryPhoneData = {};
+    {% for c in countries_phone %}
+    countryPhoneData["{{ c.alpha_2 }}"] = "{{ c.dial_code }}";
+    {% endfor %}
+
+    if (countrySelect) {
+        countrySelect.addEventListener("change", () => {
+            const selectedCountryCode = countrySelect.value;
+            // Subdivisions
+            const states = subdivisions[selectedCountryCode] || [];
+            stateList.innerHTML = '';
+            states.forEach(s => {
+                const option = document.createElement("option");
+                option.value = s.name;
+                stateList.appendChild(option);
+            });
+            // Country code
+            const dialCode = countryPhoneData[selectedCountryCode];
+            if (dialCode) {
+                for (let i = 0; i < countryCodeSelect.options.length; i++) {
+                    if (countryCodeSelect.options[i].value === dialCode) {
+                        countryCodeSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        });
+
+        if (countrySelect.value) {
+            countrySelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    // ------------------- Google Places autocomplete -------------------
+    const streetInput = document.getElementById("street_address");
+    if (streetInput && typeof google !== 'undefined') {
+        const autocomplete = new google.maps.places.Autocomplete(streetInput, { types: ['address'] });
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            const addressComponents = place.address_components;
+
+            let street = '', city = '', state = '', postal = '', country = '';
+            addressComponents.forEach(comp => {
+                const types = comp.types;
+                if (types.includes('street_number')) street = comp.long_name + ' ';
+                if (types.includes('route')) street += comp.long_name;
+                if (types.includes('locality')) city = comp.long_name;
+                if (types.includes('administrative_area_level_1')) state = comp.long_name;
+                if (types.includes('postal_code')) postal = comp.long_name;
+                if (types.includes('country')) country = comp.long_name;
+            });
+
+            document.getElementById("street_address").value = street;
+            document.getElementById("city").value = city;
+            document.getElementById("state_province_region").value = state;
+            document.getElementById("postal_code").value = postal;
+
+            if (country) {
+                for (let i = 0; i < countrySelect.options.length; i++) {
+                    if (countrySelect.options[i].text === country) {
+                        countrySelect.selectedIndex = i;
+                        countrySelect.dispatchEvent(new Event('change'));
+                        break;
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

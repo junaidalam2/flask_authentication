@@ -12,6 +12,7 @@ from flask import current_app
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 from project import mail
+from flask_login import current_user
 
 
 auth = Blueprint('auth', __name__)
@@ -212,3 +213,45 @@ def reset_password(token):
             return redirect(url_for('auth.login'))
 
     return render_template('reset_password.html')
+
+
+@auth.route('/edit_profile', methods=['GET'])
+@login_required
+def edit_profile():
+    all_countries = [(c.alpha_2, c.name) for c in pycountry.countries]
+    priority = ['US', 'CA', 'GB']
+    sorted_countries = sorted(
+        all_countries,
+        key=lambda x: (0 if x[0] in priority else 1, priority.index(x[0]) if x[0] in priority else x[1])
+    )
+    return render_template(
+        'edit_profile.html',
+        user=current_user,
+        countries=sorted_countries,
+        subdivisions=get_subdivisions(),
+        countries_phone=get_country_calling_codes(),
+        google_places_api_key=Config.GOOGLE_PLACES_API_KEY
+    )
+
+
+@auth.route('/edit_profile', methods=['POST'])
+@login_required
+def edit_profile_post():
+    user = current_user
+    user.first_name = request.form.get('first_name')
+    user.last_name = request.form.get('last_name')
+    user.title = request.form.get('title')
+    user.company_name = request.form.get('company_name')
+    user.country = request.form.get('country')
+    user.street_address = request.form.get('street_address')
+    user.street_address_line2 = request.form.get('street_address_line2')
+    user.city = request.form.get('city')
+    user.state_province_region = request.form.get('state_province_region')
+    user.postal_code = request.form.get('postal_code')
+    user.country_code = request.form.get('country_code')
+    user.phone = request.form.get('phone')
+    user.phone_type = request.form.get('phone_type')
+
+    db.session.commit()
+    flash('Profile updated successfully.', 'success')
+    return redirect(url_for('main.profile'))
