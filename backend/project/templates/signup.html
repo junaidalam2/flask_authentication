@@ -200,13 +200,9 @@
                         <div class="control">
                             <div class="select is-fullwidth">
                                 <select id="phone_type" name="phone_type" required>
-                                    <option value="">Select type</option>
-                                    <option value="mobile" {% if form.phone_type=='mobile' %}selected{% endif %}>Mobile
-                                    </option>
-                                    <option value="work" {% if form.phone_type=='work' %}selected{% endif %}>Work
-                                    </option>
-                                    <option value="home" {% if form.phone_type=='home' %}selected{% endif %}>Home
-                                    </option>
+                                    <option value="mobile" {% if form.phone_type == 'mobile' or not form.phone_type %}selected{% endif %}>Mobile</option>
+                                    <option value="work" {% if form.phone_type == 'work' %}selected{% endif %}>Work</option>
+                                    <option value="home" {% if form.phone_type == 'home' %}selected{% endif %}>Home</option>
                                 </select>
                             </div>
                         </div>
