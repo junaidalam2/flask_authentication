@@ -28,22 +28,22 @@ def profile():
 @login_required
 def edit_profile():
     if request.method == 'POST':
-        # Get form values
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        title = request.form.get('title')
-        company_name = request.form.get('company_name')
-        street_address = request.form.get('street_address')
-        street_address_line2 = request.form.get('street_address_line2')
-        city = request.form.get('city')
-        state_province_region = request.form.get('state_province_region')
-        postal_code = request.form.get('postal_code')
-        country = request.form.get('country')
-        country_code = request.form.get('country_code')
-        phone = request.form.get('phone')
-        phone_type = request.form.get('phone_type')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+        # Get form values and strip whitespace
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
+        title = request.form.get('title', '').strip()
+        company_name = request.form.get('company_name', '').strip()
+        street_address = request.form.get('street_address', '').strip()
+        street_address_line2 = request.form.get('street_address_line2', '').strip()
+        city = request.form.get('city', '').strip()
+        state_province_region = request.form.get('state_province_region', '').strip()
+        postal_code = request.form.get('postal_code', '').strip()
+        country = request.form.get('country', '').strip()
+        country_code = request.form.get('country_code', '').strip()
+        phone = request.form.get('phone', '').strip()
+        phone_type = request.form.get('phone_type', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
 
         # Update basic profile fields
         current_user.first_name = first_name
@@ -60,27 +60,24 @@ def edit_profile():
         current_user.phone = phone
         current_user.phone_type = phone_type
 
-        # Track if password was changed
-        password_changed = False
-
-        # Handle password update only if both fields are filled
+        # Handle password update safely
         if password or confirm_password:
             if password != confirm_password:
                 flash("Passwords do not match.", "danger")
                 return redirect(url_for('main.edit_profile'))
-            if password.strip() == "":
+            if not password.strip():
                 flash("Password cannot be empty.", "danger")
                 return redirect(url_for('main.edit_profile'))
+            
+            # Hash and save the new password
             current_user.password = generate_password_hash(password, method='pbkdf2:sha256')
-            password_changed = True
-
-        db.session.commit()
-
-        if password_changed:
+            db.session.commit()
             flash('Profile updated successfully! Please log in again with your new password.', 'success')
             logout_user()
             return redirect(url_for('auth.login'))
 
+        # Commit changes if password was not updated
+        db.session.commit()
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('main.profile'))
 
