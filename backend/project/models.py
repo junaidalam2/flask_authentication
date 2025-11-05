@@ -4,7 +4,8 @@ from . import db
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    # Increase length to accommodate modern hashed password formats (pbkdf2:sha256, bcrypt, etc.)
+    password = db.Column(db.String(255), nullable=False)
 
     # Required personal and business info
     first_name = db.Column(db.String(100), nullable=False)
