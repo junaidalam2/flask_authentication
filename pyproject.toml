@@ -1,0 +1,9 @@
+[project]
+name = "flask_authentication"
+version = "0.1.0"
+description = "Flask Authentication System"
+requires-python = ">=3.9,<3.13"
+
+[build-system]
+requires = ["pip>=23.0.0"]
+build-backend = "pip"

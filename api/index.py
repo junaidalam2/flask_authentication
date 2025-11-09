@@ -1,5 +1,12 @@
+import os
+import sys
 from asgiref.wsgi import WsgiToAsgi
-from project import create_app
+
+# Add the project root to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Now we can import from the project package
+from backend.project import create_app
 
 # Create the Flask app using your factory
 wsgi_app = create_app()
