@@ -1,0 +1,15 @@
+# Base requirements
+Flask>=2.0.0
+Flask-Login>=0.6.0
+Flask-SQLAlchemy>=3.0.0
+Flask-Migrate>=4.0.0
+Werkzeug>=2.0.0
+pycountry>=22.3.0
+email_validator>=2.0.0
+
+# Vercel deployment
+asgiref>=3.7.0  # For WSGI to ASGI conversion
+
+# Optional development packages
+# pytest>=7.0.0
+# black>=22.0.0
